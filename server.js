@@ -1,4 +1,5 @@
-/*
+/** 노드 http 모듈도 서버 열기
+// 웹서버를 실행하기 위해 http 모듈을 require로 불러옴
 const http = require("http");
 // node 서버 생성 
 const server = http.createServer((req, res) => {
@@ -11,28 +12,54 @@ const server = http.createServer((req, res) => {
 server.listen(3000, () => {
   console.log("3000 SErver is running");
 })
-
 */
 
-// 웹서버를 실행하기ㅜ이해 http 모듈을 require로 불러옴
 
-// express 서버 열기
+/** express 프레임워크를 이용한 서버 열기
 const express = require("express");
 const app = express();
 const PORT = 3000;
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
+app.get('/name/:user_name', function(req,res) {
+  res.status(200);
+  res.set('Content-type', 'text/html');
+  res.send('<html><body>' +
+    '<h1>Hello ' + req.params.user_name + '</h1>' +
+    '</body></html>'
+  );
+});
+
+//loacalhost:3000/name/sumin으로 접속하면 Hello sumin이 나옴
+
+app.listen(PORT, () => {
+  console.log(`SErver is running: http://localhost:${PORT}`);
+});
+ */
+
+
+// 정적 파일 사용
+const express = require("express");
+const path = require("path");
+const app = express();
+const PORT = 3000;
+
+app.set('view engine', 'ejs'); 
+app.set('views', path.join(__dirname, 'views'));
 
 // 정적파일 설정
+// __dirname 는 절대경로
+// app.use('/static', express.static('public')); // 가상경로 설정
 app.use("/js", express.static(path.join(__dirname, "public/js")));
 app.use(express.static(path.join(__dirname, "public")));
 
 // 라우팅 설정
-const testRouter = require("./routes/testRouter");
-app.use("/test", testRouter);
-// app.get("/", (req, res) => {
-//   res.seedFile(__dirname + "/index.html");
-// })
+// const testRouter = require("./routes/testRouter");
+// app.use("/test", testRouter);
 
 // 서버 실행 
 app.listen(PORT, () => {
-  console.log(`SErver is running: ${PORT}`);
+  console.log(`SErver is running: http://localhost:${PORT}`);
 });
