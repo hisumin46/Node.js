@@ -42,6 +42,7 @@ app.listen(PORT, () => {
 
 // 정적 파일 사용
 const express = require("express");
+const bodyParser = require("body-parser");
 const path = require("path");
 const app = express();
 const PORT = 3000;
@@ -52,12 +53,15 @@ app.set('views', path.join(__dirname, 'views'));
 // 정적파일 설정
 // __dirname 는 절대경로
 // app.use('/static', express.static('public')); // 가상경로 설정
-app.use("/js", express.static(path.join(__dirname, "public/js")));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "src")));
+
+// json 사용
+app.use(bodyParser.json());
 
 // 라우팅 설정
-// const testRouter = require("./routes/testRouter");
-// app.use("/test", testRouter);
+const testRouter = require("./routes/testRouter");
+app.use("/test", testRouter);
 
 // 서버 실행 
 app.listen(PORT, () => {
