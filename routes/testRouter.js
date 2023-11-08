@@ -44,21 +44,4 @@ router.post("/command-ls", (req, res) => {
   });
 });
 
-router.post("/command-ping", (req, res) => {
-  const body = req.body;
-  const command = body.command;
-  
-  child_process.exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`error: ${error}`);
-      console.error(`stderr: ${stderr}`);
-      res.status(500).json({ error: '명령 실행 중 에러 발생' });
-    } else {
-      console.log(`command result: ${stdout}`);
-      res.json({ result: stdout });
-    }
-  });
-});
-
-
 module.exports = router;

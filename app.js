@@ -53,8 +53,8 @@ const cors = require('cors');
 const child_process = require('child_process');
 
 
-app.set('view engine', 'ejs'); 
-app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs'); // 템플릿 엔진 설정
+app.set('views', path.join(__dirname, 'views')); // view 파일 폴더 지정
 
 // 정적파일 설정
 // __dirname 는 절대경로
@@ -72,26 +72,17 @@ const testRouter = require("./routes/testRouter");
 app.use("/", testRouter);
 
 // Web Socket
-const wss = new WebSocket.Server({ server });
+// 이미 생성된 HTTP 서버(server)를 WebSocket 서버로 업그레이드
+// HTTP 서버와 WebSocket 서버를 통합하고 같은 포트를 사용하여 통신
+// const wss = new WebSocket.Server({ server }); 
+
+// 서버 자체에서 WebSocket 서버를 독립적으로 열고 사용
+const wss = new WebSocket.WebSocketServer({ port:3001 });
 wss.on('connection', (ws) => {
   console.log('Connecting web socket');
 
   ws.on("message", (message) => {
-    // ping을 실행하고 결과를 클라이언트로 보내기
-    // child_process.exec(`${message}`, (error, stdout, stderr) => {
-    // child_process.exec("ping google.com", (error, stdout, stderr) => {
-    //   if (error) {
-    //     console.error(`error: ${error}`);
-    //     console.error(`stderr: ${stderr}`);
-    //     res.status(500).json({ error: '명령 실행 중 에러 발생' });
-    //   } else {
-        
-    //     console.log(`command result: ${stdout}`);
-    //     ws.send(`서버에서 에코: ${stdout}`);
-    //   }
-    // });
-
-    // 'ping' 명령 실행 및 결과를 스트리밍
+    // ping을 실행하고 결과를 스트리밍 형식으로 클라이언트로 보내기
     const pingProcess = child_process.spawn('ping', ['google.com']);
     pingProcess.stdout.on('data', (data) => {
       const resultLine = data.toString();
@@ -100,10 +91,9 @@ wss.on('connection', (ws) => {
   });
 });
 
-
 // epxress는 기본적으로 웹소켓을 지원하지 않기에 http 모듈 사용
-// 소켓 사용을 위해 
+// 소켓 사용을 위해 http server로 열기
 // 서버 실행 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server is running: http://localhost:${PORT}`);
 });
